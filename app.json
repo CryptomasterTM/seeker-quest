@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "seeker-quest",
+    "name": "The Seeker",
     "slug": "seeker-quest",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,12 +17,10 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.cryptomaster25.seekerquest"
     },
-    "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
+    "web": {"bundler": "metro", "output": "single"},
     "plugins": [
       "expo-router",
       [
@@ -37,6 +35,14 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2b147c6c-fcb3-4281-804b-dd4948eb5128"
+      }
     }
   }
 }
+
+
