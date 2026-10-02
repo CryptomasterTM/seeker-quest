@@ -1,0 +1,13 @@
+diff --git a/node_modules/@wallet-ui/react-native-web3js/dist/index.native.mjs b/node_modules/@wallet-ui/react-native-web3js/dist/index.native.mjs
+index 2ca3d64..61ab20e 100644
+--- a/node_modules/@wallet-ui/react-native-web3js/dist/index.native.mjs
++++ b/node_modules/@wallet-ui/react-native-web3js/dist/index.native.mjs
+@@ -297,7 +297,7 @@ function useMobileWallet() {
+   } = useAuthorization(ctx);
+   const connect = useCallback(async () => {
+     assertValidIdentityUri(ctx.identity);
+-    return await transact(async (wallet) => await authorizeSession(wallet));
++    return await transact(async (wallet) => await authorizeSession(wallet), { baseUri: ctx.identity.uri });
+   }, [authorizeSession, ctx.identity]);
+   const connectAnd = useCallback(
+     async (cb) => {
