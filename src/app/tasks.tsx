@@ -86,8 +86,8 @@ export default function TasksScreen() {
   async function walletGate() {
     if (wallet) return true;
 
-    await connect();
-    const address = account?.address?.toString() ?? null;
+    const connectedAccount = await connect();
+      const address = connectedAccount?.address?.toString() ?? null;
 
     if (!address) {
       Alert.alert(
@@ -791,6 +791,7 @@ const s = StyleSheet.create({
     fontWeight: '900',
   },
 });
+
 
 
 

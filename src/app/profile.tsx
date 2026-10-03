@@ -126,8 +126,8 @@ export default function ProfileScreen() {
     setConnectingWallet(true);
 
     try {
-      await connect();
-      const walletAddress = account?.address?.toString() ?? null;
+      const connectedAccount = await connect();
+      const walletAddress = connectedAccount?.address?.toString() ?? null;
 
       if (!walletAddress) {
         Alert.alert(
@@ -1086,4 +1086,5 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
+
 

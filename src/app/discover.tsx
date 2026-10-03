@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
@@ -59,6 +59,37 @@ const learningCards = [
   },
 ];
 
+const cryptoBasics = [
+  {
+    icon: '01',
+    title: 'Public-Key Cryptography',
+    label: 'SECURITY',
+    description:
+      'Wallets use a public key and a private key. Your public key can be shared to identify your wallet, while your private key stays secret and is used to prove ownership.',
+  },
+  {
+    icon: '02',
+    title: 'Solana Basics',
+    label: 'BLOCKCHAIN',
+    description:
+      'Solana is a high-performance blockchain where users can hold assets, interact with applications and sign transactions with their wallets.',
+  },
+  {
+    icon: '03',
+    title: 'How Phantom Works',
+    label: 'WALLET',
+    description:
+      'Phantom lets users manage their crypto assets and approve actions from supported apps. Your private keys remain under your control.',
+  },
+  {
+    icon: '04',
+    title: 'Phantom Connect',
+    label: 'CONNECTION',
+    description:
+      'Phantom Connect gives developers tools for connecting users and wallets in web and mobile applications without exposing private keys to the app.',
+  },
+];
+
 const officialResources = [
   {
     title: 'Solana Mobile',
@@ -79,6 +110,16 @@ const officialResources = [
     title: 'CLOCK IN',
     description: 'Official Solana Mobile hackathon information.',
     url: 'https://solanamobile.com/hackathon',
+  },
+  {
+    title: 'Phantom: Solana 101',
+    description: 'A beginner-friendly guide to understanding Solana.',
+    url: 'https://phantom.com/learn/crypto-101/a-beginner-s-guide-to-solana',
+  },
+  {
+    title: 'Phantom Connect',
+    description: 'Official Phantom documentation for wallet connections and embedded wallets.',
+    url: 'https://docs.phantom.com/phantom-connect/overview',
   },
 ];
 
@@ -222,8 +263,9 @@ export default function DiscoverScreen() {
             </Text>
 
             <Text style={styles.heroDescription}>
-              Learn about Seeker, explore the ecosystem, find official
-              resources and discover events worth checking out.
+              Learn about Seeker, explore the ecosystem, understand the
+              technology behind Web3 and discover official resources and
+              events worth checking out.
             </Text>
           </View>
 
@@ -253,6 +295,55 @@ export default function DiscoverScreen() {
                 </Text>
               </Pressable>
             ))}
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>CRYPTO BASICS</Text>
+            <Text style={styles.sectionCount}>LEARN</Text>
+          </View>
+
+          <Text style={styles.sectionIntro}>
+            New to Web3? Start here. Learn the basic ideas behind wallets,
+            Solana and secure digital ownership.
+          </Text>
+
+          <View style={styles.basicsList}>
+            {cryptoBasics.map((item) => (
+              <View key={item.title} style={styles.basicCard}>
+                <View style={styles.basicIcon}>
+                  <Text style={styles.basicIconText}>{item.icon}</Text>
+                </View>
+
+                <View style={styles.basicContent}>
+                  <Text style={styles.basicLabel}>{item.label}</Text>
+
+                  <Text style={styles.basicTitle}>{item.title}</Text>
+
+                  <Text style={styles.basicDescription}>
+                    {item.description}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <View style={styles.safetyCard}>
+            <View style={styles.safetyTop}>
+              <Text style={styles.safetyIcon}>!</Text>
+
+              <View style={styles.safetyHeading}>
+                <Text style={styles.safetyLabel}>WALLET SAFETY</Text>
+                <Text style={styles.safetyTitle}>
+                  Protect your private keys.
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.safetyText}>
+              Never share your seed phrase or private key with anyone.
+              Legitimate wallets and apps should never ask you to send them
+              your secret recovery phrase.
+            </Text>
           </View>
 
           <View style={styles.sectionHeader}>
@@ -568,6 +659,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
+  sectionIntro: {
+    color: '#7F8EA3',
+    fontSize: 13,
+    lineHeight: 20,
+    marginTop: -4,
+    marginBottom: 16,
+  },
+
   learningGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -628,6 +727,115 @@ const styles = StyleSheet.create({
     color: '#7F8EA3',
     fontSize: 12,
     lineHeight: 18,
+  },
+
+  basicsList: {
+    marginBottom: 16,
+  },
+
+  basicCard: {
+    flexDirection: 'row',
+    backgroundColor: '#090B12',
+    borderWidth: 1,
+    borderColor: '#1B1F2C',
+    borderRadius: 18,
+    padding: 17,
+    marginBottom: 12,
+  },
+
+  basicIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: '#151022',
+    borderWidth: 1,
+    borderColor: '#6D28D9',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+
+  basicIconText: {
+    color: '#C084FC',
+    fontSize: 11,
+    fontWeight: '900',
+  },
+
+  basicContent: {
+    flex: 1,
+  },
+
+  basicLabel: {
+    color: '#64748B',
+    fontSize: 9,
+    fontWeight: '800',
+    letterSpacing: 1.1,
+    marginBottom: 4,
+  },
+
+  basicTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+
+  basicDescription: {
+    color: '#7F8EA3',
+    fontSize: 12,
+    lineHeight: 19,
+  },
+
+  safetyCard: {
+    backgroundColor: '#0D0B14',
+    borderWidth: 1,
+    borderColor: '#3B285A',
+    borderRadius: 18,
+    padding: 18,
+    marginBottom: 30,
+  },
+
+  safetyTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+
+  safetyIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#2A1738',
+    color: '#D8B4FE',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    fontSize: 18,
+    fontWeight: '900',
+    marginRight: 12,
+  },
+
+  safetyHeading: {
+    flex: 1,
+  },
+
+  safetyLabel: {
+    color: '#C084FC',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1.2,
+    marginBottom: 3,
+  },
+
+  safetyTitle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+
+  safetyText: {
+    color: '#8B99AD',
+    fontSize: 12,
+    lineHeight: 19,
   },
 
   loadingBox: {

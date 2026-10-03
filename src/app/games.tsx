@@ -39,8 +39,8 @@ export default function GamesScreen() {
   async function gate() {
     if (wallet) return true;
 
-    await connect();
-    const a = account?.address?.toString() ?? null;
+    const connectedAccount = await connect();
+      const a = connectedAccount?.address?.toString() ?? null;
 
     if (!a) return false;
 
@@ -665,6 +665,7 @@ const s = StyleSheet.create({
     marginTop: 7,
   },
 });
+
 
 
 
