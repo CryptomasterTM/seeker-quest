@@ -40,7 +40,6 @@
   "devDependencies": {
     "@react-native-community/cli": "^20.2.0",
     "@types/react": "~19.2.2",
-    "patch-package": "^8.0.1",
     "typescript": "^5.9.3"
   },
   "scripts": {
@@ -49,8 +48,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "postinstall": "patch-package"
+    "lint": "expo lint"
   },
   "private": true
 }
