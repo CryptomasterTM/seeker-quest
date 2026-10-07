@@ -3,9 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useMobileWallet } from '@wallet-ui/react-native-web3js';
-
-const XP_KEY = 'seeker_xp';
-const TOTAL_TASKS_KEY = 'seeker_total_tasks';
+import { getXp, getTotalTasks } from '../lib/seekerProgress';
 
 export default function HomeScreen() {
   const { connect, account } = useMobileWallet();
@@ -18,20 +16,22 @@ export default function HomeScreen() {
 
   useEffect(() => {
     loadProgress();
-  }, []);
+  }, [account?.address]);
 
   useEffect(() => {
     if (account?.address) {
       setWallet(account.address.toString());
+      AsyncStorage.setItem(
+        'seeker_wallet',
+        account.address.toString()
+      ).catch(() => {});
     }
   }, [account]);
 
   const loadProgress = async () => {
     try {
-      const savedXp = Number((await AsyncStorage.getItem(XP_KEY)) || '0');
-      const savedTasks = Number(
-        (await AsyncStorage.getItem(TOTAL_TASKS_KEY)) || '0'
-      );
+      const savedXp = await getXp();
+      const savedTasks = await getTotalTasks();
 
       setXp(savedXp);
       setTotalTasks(savedTasks);
@@ -44,11 +44,18 @@ export default function HomeScreen() {
   const handleConnect = async () => {
     try {
       const connectedAccount = await connect();
-      const address = connectedAccount?.address?.toString() ?? null;
+      const address =
+        connectedAccount?.address?.toString() ?? null;
 
       if (address) {
         setWallet(address);
-        await AsyncStorage.setItem('seeker_wallet', address);
+
+        await AsyncStorage.setItem(
+          'seeker_wallet',
+          address
+        );
+
+        await loadProgress();
       }
     } catch (error) {
       console.log('WALLET CONNECTION ERROR:', error);
@@ -57,7 +64,10 @@ export default function HomeScreen() {
 
   const level = Math.floor(xp / 1000) + 1;
   const levelXp = xp % 1000;
-  const levelProgress = Math.min((levelXp / 1000) * 100, 100);
+  const levelProgress = Math.min(
+    (levelXp / 1000) * 100,
+    100
+  );
 
   const shortWallet = wallet
     ? `${wallet.slice(0, 5)}...${wallet.slice(-5)}`
@@ -100,7 +110,10 @@ export default function HomeScreen() {
         </View>
 
         {!wallet ? (
-          <Pressable style={styles.connectButton} onPress={handleConnect}>
+          <Pressable
+            style={styles.connectButton}
+            onPress={handleConnect}
+          >
             <Text style={styles.connectText}>CONNECT</Text>
           </Pressable>
         ) : (
@@ -114,10 +127,12 @@ export default function HomeScreen() {
         <View style={styles.lockCard}>
           <Text style={styles.lockIcon}>◈</Text>
           <View style={styles.lockContent}>
-            <Text style={styles.lockTitle}>Your Seeker journey starts here</Text>
+            <Text style={styles.lockTitle}>
+              Your Seeker journey starts here
+            </Text>
             <Text style={styles.lockText}>
-              Connect your Solana wallet to unlock quests, games, tasks,
-              events, XP and rewards.
+              Connect your Solana wallet to unlock quests, games,
+              tasks, events, XP and rewards.
             </Text>
           </View>
         </View>
@@ -143,11 +158,17 @@ export default function HomeScreen() {
       <View style={styles.progressCard}>
         <View style={styles.progressHeader}>
           <View>
-            <Text style={styles.sectionEyebrow}>SEEKER PROGRESS</Text>
-            <Text style={styles.progressTitle}>Level {level}</Text>
+            <Text style={styles.sectionEyebrow}>
+              SEEKER PROGRESS
+            </Text>
+            <Text style={styles.progressTitle}>
+              Level {level}
+            </Text>
           </View>
 
-          <Text style={styles.progressXp}>{levelXp}/1000 XP</Text>
+          <Text style={styles.progressXp}>
+            {levelXp}/1000 XP
+          </Text>
         </View>
 
         <View style={styles.progressTrack}>
@@ -170,8 +191,12 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.comboContent}>
-          <Text style={styles.sectionEyebrow}>DAILY COMBO</Text>
-          <Text style={styles.comboTitle}>Complete today's activities</Text>
+          <Text style={styles.sectionEyebrow}>
+            DAILY COMBO
+          </Text>
+          <Text style={styles.comboTitle}>
+            Complete today's activities
+          </Text>
           <Text style={styles.comboText}>
             Finish tasks and activities to unlock your daily bonus.
           </Text>
@@ -188,7 +213,9 @@ export default function HomeScreen() {
       <View style={styles.sectionHeader}>
         <View>
           <Text style={styles.sectionEyebrow}>EXPLORE</Text>
-          <Text style={styles.sectionTitle}>Your Seeker Hub</Text>
+          <Text style={styles.sectionTitle}>
+            Your Seeker Hub
+          </Text>
         </View>
       </View>
 
@@ -199,7 +226,9 @@ export default function HomeScreen() {
         >
           <Text style={styles.actionIcon}>✓</Text>
           <Text style={styles.actionTitle}>Tasks</Text>
-          <Text style={styles.actionText}>Daily quests & challenges</Text>
+          <Text style={styles.actionText}>
+            Daily quests & challenges
+          </Text>
         </Pressable>
 
         <Pressable
@@ -208,7 +237,9 @@ export default function HomeScreen() {
         >
           <Text style={styles.actionIcon}>◆</Text>
           <Text style={styles.actionTitle}>Games</Text>
-          <Text style={styles.actionText}>Play & collect XP</Text>
+          <Text style={styles.actionText}>
+            Play & collect XP
+          </Text>
         </Pressable>
 
         <Pressable
@@ -217,7 +248,9 @@ export default function HomeScreen() {
         >
           <Text style={styles.actionIcon}>⚡</Text>
           <Text style={styles.actionTitle}>Events</Text>
-          <Text style={styles.actionText}>Live Seeker events</Text>
+          <Text style={styles.actionText}>
+            Live Seeker events
+          </Text>
         </Pressable>
 
         <Pressable
@@ -226,26 +259,34 @@ export default function HomeScreen() {
         >
           <Text style={styles.actionIcon}>◉</Text>
           <Text style={styles.actionTitle}>Discover</Text>
-          <Text style={styles.actionText}>Learn & explore</Text>
+          <Text style={styles.actionText}>
+            Learn & explore
+          </Text>
         </Pressable>
       </View>
 
       <View style={styles.featureCard}>
         <View style={styles.featureBadge}>
-          <Text style={styles.featureBadgeText}>QUEST OF THE DAY</Text>
+          <Text style={styles.featureBadgeText}>
+            QUEST OF THE DAY
+          </Text>
         </View>
 
-        <Text style={styles.featureTitle}>Explore The Seeker</Text>
+        <Text style={styles.featureTitle}>
+          Explore The Seeker
+        </Text>
         <Text style={styles.featureText}>
-          Discover the ecosystem, learn something new and keep building your
-          Seeker progress.
+          Discover the ecosystem, learn something new and keep
+          building your Seeker progress.
         </Text>
 
         <Pressable
           style={styles.featureButton}
           onPress={() => router.push('/tasks' as any)}
         >
-          <Text style={styles.featureButtonText}>VIEW QUESTS →</Text>
+          <Text style={styles.featureButtonText}>
+            VIEW QUESTS →
+          </Text>
         </Pressable>
       </View>
 
@@ -254,7 +295,9 @@ export default function HomeScreen() {
           style={styles.bottomButton}
           onPress={() => router.push('/leaderboard' as any)}
         >
-          <Text style={styles.bottomButtonText}>LEADERBOARD</Text>
+          <Text style={styles.bottomButtonText}>
+            LEADERBOARD
+          </Text>
         </Pressable>
 
         <Pressable
@@ -643,3 +686,4 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
 });
+

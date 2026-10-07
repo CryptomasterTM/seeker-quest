@@ -2,57 +2,66 @@
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 
-type EventItem = {
+export type EventItem = {
+  id: string;
   title: string;
   status: 'LIVE' | 'UPCOMING' | 'ENDED';
   description: string;
   reward: string;
   duration: number;
-  progress: number;
   participants: string;
   icon: string;
+  boost: string;
 };
 
-const EVENTS: EventItem[] = [
+export const EVENTS: EventItem[] = [
   {
+    id: 'seeker-launch-run',
     title: 'SEEKER LAUNCH RUN',
     status: 'LIVE',
-    description: 'Complete quests and mini games to climb the event board.',
+    description:
+      'Complete event quests, play games and earn event XP to climb the event leaderboard.',
     reward: '2X XP',
     duration: 23 * 60 * 60 + 41 * 60,
-    progress: 60,
     participants: '1,284 players',
     icon: '⚡',
+    boost: '2X',
   },
   {
+    id: 'weekend-explorer',
     title: 'WEEKEND EXPLORER',
     status: 'UPCOMING',
-    description: 'Discover Seeker ecosystem experiences and unlock an event badge.',
+    description:
+      'Discover Seeker ecosystem experiences and unlock an exclusive event badge.',
     reward: 'BADGE',
     duration: 2 * 24 * 60 * 60 + 8 * 60 * 60,
-    progress: 0,
     participants: 'Starts Saturday',
     icon: '◈',
+    boost: '1.5X',
   },
   {
+    id: 'skr-quiz-cup',
     title: 'SKR QUIZ CUP',
     status: 'UPCOMING',
-    description: 'Compete in a fast Seeker knowledge challenge.',
+    description:
+      'Compete in a fast Seeker knowledge challenge and fight for the top spots.',
     reward: '750 XP',
     duration: 4 * 24 * 60 * 60,
-    progress: 0,
     participants: 'Registration soon',
     icon: '?',
+    boost: '2X',
   },
   {
+    id: 'quest-rush',
     title: 'QUEST RUSH',
     status: 'UPCOMING',
-    description: 'Finish as many daily tasks as possible before the event timer ends.',
+    description:
+      'Finish as many event activities as possible before the event timer ends.',
     reward: '1,000 XP',
     duration: 6 * 24 * 60 * 60,
-    progress: 0,
     participants: 'Registration soon',
     icon: '◆',
+    boost: '3X',
   },
 ];
 
@@ -63,16 +72,20 @@ function formatTime(seconds: number) {
   const minutes = Math.floor((safe % 3600) / 60);
   const secs = safe % 60;
 
-  if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m`;
+  }
+
   return `${hours}h ${minutes}m ${secs}s`;
 }
 
 export default function EventsScreen() {
-  const [filter, setFilter] = useState<'ALL' | 'LIVE' | 'UPCOMING' | 'ENDED'>('ALL');
+  const [filter, setFilter] =
+    useState<'ALL' | 'LIVE' | 'UPCOMING' | 'ENDED'>('ALL');
 
   const [remaining, setRemaining] = useState<Record<string, number>>(
     Object.fromEntries(
-      EVENTS.map((event) => [event.title, event.duration])
+      EVENTS.map((event) => [event.id, event.duration])
     )
   );
 
@@ -94,34 +107,69 @@ export default function EventsScreen() {
 
   const filteredEvents = useMemo(() => {
     if (filter === 'ALL') return EVENTS;
-    return EVENTS.filter((event) => event.status === filter);
+
+    return EVENTS.filter(
+      (event) => event.status === filter
+    );
   }, [filter]);
+
+  const liveCount = EVENTS.filter(
+    (event) => event.status === 'LIVE'
+  ).length;
+
+  const upcomingCount = EVENTS.filter(
+    (event) => event.status === 'UPCOMING'
+  ).length;
 
   return (
     <ScrollView
       style={s.page}
       contentContainerStyle={s.content}
       showsVerticalScrollIndicator={false}
-    >
+    ><View nativeID="SEEKER_BACK_HOME_EVENTS" style={{ marginBottom: 4 }}>
+  <Pressable
+    onPress={() => router.replace('/home')}
+    style={{
+      alignSelf: 'flex-start',
+      paddingVertical: 8,
+      paddingHorizontal: 2,
+      marginBottom: 8,
+    }}
+  >
+    <Text style={{ color: '#7F8DA8', fontSize: 13, fontWeight: '800' }}>
+      ← Back Home
+    </Text>
+  </Pressable>
+</View>
+
       <Text style={s.eyebrow}>THE SEEKER</Text>
+
       <Text style={s.title}>Events</Text>
+
       <Text style={s.sub}>
-        Limited-time challenges, special quests and exclusive rewards.
+        Limited-time challenges, event quests, leaderboards and rewards.
       </Text>
 
       <View style={s.stats}>
         <View style={s.stat}>
-          <Text style={s.statNumber}>01</Text>
+          <Text style={s.statNumber}>
+            {String(liveCount).padStart(2, '0')}
+          </Text>
+
           <Text style={s.statLabel}>LIVE NOW</Text>
         </View>
 
         <View style={s.stat}>
-          <Text style={s.statNumber}>03</Text>
+          <Text style={s.statNumber}>
+            {String(upcomingCount).padStart(2, '0')}
+          </Text>
+
           <Text style={s.statLabel}>UPCOMING</Text>
         </View>
 
         <View style={s.stat}>
           <Text style={s.statNumber}>2X</Text>
+
           <Text style={s.statLabel}>XP BOOST</Text>
         </View>
       </View>
@@ -130,80 +178,106 @@ export default function EventsScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={s.filters}
-      >
-        {(['ALL', 'LIVE', 'UPCOMING', 'ENDED'] as const).map((item) => (
-          <Pressable
-            key={item}
-            style={[s.filter, filter === item && s.filterActive]}
-            onPress={() => setFilter(item)}
-          >
-            <Text
+      ><View nativeID="SEEKER_BACK_HOME_EVENTS" style={{ marginBottom: 4 }}>
+  <Pressable
+    onPress={() => router.replace('/home')}
+    style={{
+      alignSelf: 'flex-start',
+      paddingVertical: 8,
+      paddingHorizontal: 2,
+      marginBottom: 8,
+    }}
+  >
+    <Text style={{ color: '#7F8DA8', fontSize: 13, fontWeight: '800' }}>
+      ← Back Home
+    </Text>
+  </Pressable>
+</View>
+
+        {(['ALL', 'LIVE', 'UPCOMING', 'ENDED'] as const).map(
+          (item) => (
+            <Pressable
+              key={item}
               style={[
-                s.filterText,
-                filter === item && s.filterTextActive,
+                s.filter,
+                filter === item && s.filterActive,
               ]}
+              onPress={() => setFilter(item)}
             >
-              {item}
-            </Text>
-          </Pressable>
-        ))}
+              <Text
+                style={[
+                  s.filterText,
+                  filter === item &&
+                    s.filterTextActive,
+                ]}
+              >
+                {item}
+              </Text>
+            </Pressable>
+          )
+        )}
       </ScrollView>
 
       {filteredEvents.map((event) => {
-        const time = remaining[event.title] ?? event.duration;
+        const time =
+          remaining[event.id] ?? event.duration;
 
         return (
-          <View key={event.title} style={s.event}>
+          <View key={event.id} style={s.event}>
             <View style={s.eventTop}>
               <View style={s.eventIcon}>
-                <Text style={s.eventIconText}>{event.icon}</Text>
+                <Text style={s.eventIconText}>
+                  {event.icon}
+                </Text>
               </View>
 
               <View style={s.eventTopText}>
                 <Text
                   style={[
                     s.status,
-                    event.status === 'UPCOMING' && s.statusUpcoming,
-                    event.status === 'ENDED' && s.statusEnded,
+                    event.status === 'UPCOMING' &&
+                      s.statusUpcoming,
+                    event.status === 'ENDED' &&
+                      s.statusEnded,
                   ]}
                 >
                   {event.status}
                 </Text>
 
-                <Text style={s.eventTitle}>{event.title}</Text>
+                <Text style={s.eventTitle}>
+                  {event.title}
+                </Text>
               </View>
 
               <View style={s.reward}>
-                <Text style={s.rewardText}>{event.reward}</Text>
+                <Text style={s.rewardText}>
+                  {event.reward}
+                </Text>
               </View>
             </View>
 
-            <Text style={s.desc}>{event.description}</Text>
+            <Text style={s.desc}>
+              {event.description}
+            </Text>
 
-            {event.status === 'LIVE' && (
-              <>
-                <View style={s.progressRow}>
-                  <Text style={s.progressLabel}>EVENT PROGRESS</Text>
-                  <Text style={s.progressValue}>
-                    {event.progress}%
-                  </Text>
-                </View>
+            <View style={s.boostRow}>
+              <View style={s.boostBadge}>
+                <Text style={s.boostText}>
+                  {event.boost} XP
+                </Text>
+              </View>
 
-                <View style={s.progressTrack}>
-                  <View
-                    style={[
-                      s.progressFill,
-                      { width: `${event.progress}%` },
-                    ]}
-                  />
-                </View>
-              </>
-            )}
+              <Text style={s.eventType}>
+                EVENT CHALLENGE
+              </Text>
+            </View>
 
             <View style={s.details}>
               <View>
                 <Text style={s.detailLabel}>
-                  {event.status === 'LIVE' ? 'ENDS IN' : 'TIME'}
+                  {event.status === 'LIVE'
+                    ? 'ENDS IN'
+                    : 'TIME'}
                 </Text>
 
                 <Text style={s.time}>
@@ -214,19 +288,31 @@ export default function EventsScreen() {
               </View>
 
               <View style={s.players}>
-                <Text style={s.detailLabel}>PLAYERS</Text>
-                <Text style={s.time}>{event.participants}</Text>
+                <Text style={s.detailLabel}>
+                  PLAYERS
+                </Text>
+
+                <Text style={s.time}>
+                  {event.participants}
+                </Text>
               </View>
             </View>
 
             <View style={s.actions}>
               <Pressable
                 style={s.primaryButton}
-                onPress={() => router.push('/tasks' as any)}
+                onPress={() =>
+                  router.push({
+                    pathname: '/event-detail',
+                    params: {
+                      id: event.id,
+                    },
+                  })
+                }
               >
                 <Text style={s.primaryText}>
                   {event.status === 'LIVE'
-                    ? 'JOIN EVENT'
+                    ? 'ENTER EVENT'
                     : 'VIEW EVENT'}
                 </Text>
               </Pressable>
@@ -234,7 +320,13 @@ export default function EventsScreen() {
               <Pressable
                 style={s.secondaryButton}
                 onPress={() =>
-                  router.push('/leaderboard' as any)
+                  router.push({
+                    pathname: '/event-detail',
+                    params: {
+                      id: event.id,
+                      section: 'leaderboard',
+                    },
+                  })
                 }
               >
                 <Text style={s.secondaryText}>
@@ -249,7 +341,11 @@ export default function EventsScreen() {
       {filteredEvents.length === 0 && (
         <View style={s.empty}>
           <Text style={s.emptyIcon}>◇</Text>
-          <Text style={s.emptyTitle}>No events here yet</Text>
+
+          <Text style={s.emptyTitle}>
+            No events here yet
+          </Text>
+
           <Text style={s.emptyText}>
             Check another event category or come back later.
           </Text>
@@ -260,11 +356,14 @@ export default function EventsScreen() {
         <Text style={s.ruleIcon}>SKR</Text>
 
         <View style={s.ruleBody}>
-          <Text style={s.ruleTitle}>EVENT ACCESS</Text>
+          <Text style={s.ruleTitle}>
+            EVENT ACCESS
+          </Text>
 
           <Text style={s.ruleText}>
-            Connect a compatible Solana wallet before participating.
-            Your event progress can then be linked to your Seeker profile.
+            Connect a compatible Solana wallet before
+            participating. Event progress is kept separately
+            from your normal daily tasks.
           </Text>
         </View>
       </View>
@@ -275,7 +374,7 @@ export default function EventsScreen() {
         </Text>
 
         <Text style={s.footerText}>
-          Keep completing quests, playing games and building your profile.
+          Keep seeking. New challenges can appear over time.
         </Text>
       </View>
     </ScrollView>
@@ -450,37 +549,33 @@ const s = StyleSheet.create({
     marginTop: 14,
   },
 
-  progressRow: {
+  boostRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
+    alignItems: 'center',
+    marginTop: 13,
   },
 
-  progressLabel: {
-    color: '#697793',
+  boostBadge: {
+    backgroundColor: '#102d4c',
+    borderWidth: 1,
+    borderColor: '#1d638c',
+    borderRadius: 9,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+  },
+
+  boostText: {
+    color: '#55c8ff',
     fontSize: 9,
     fontWeight: '900',
-    letterSpacing: 1,
   },
 
-  progressValue: {
-    color: '#58bdff',
-    fontSize: 10,
+  eventType: {
+    color: '#596984',
+    fontSize: 8,
     fontWeight: '900',
-  },
-
-  progressTrack: {
-    height: 7,
-    backgroundColor: '#172037',
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginTop: 7,
-  },
-
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#2684ff',
-    borderRadius: 10,
+    letterSpacing: 1,
+    marginLeft: 9,
   },
 
   details: {
@@ -622,4 +717,6 @@ const s = StyleSheet.create({
     marginTop: 6,
   },
 });
+
+
 

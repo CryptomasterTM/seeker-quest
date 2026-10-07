@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { supabase } from '../lib/supabase';
+import { syncProfileProgress } from '../lib/seekerProgress';
 
 type Player = {
   username: string | null;
@@ -32,6 +33,8 @@ export default function LeaderboardScreen() {
 
   async function loadLeaderboard() {
     try {
+      await syncProfileProgress();
+
       const { data, error } = await supabase.rpc('get_leaderboard');
 
       if (error) {
@@ -592,3 +595,4 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
+

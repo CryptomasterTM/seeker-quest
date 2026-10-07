@@ -1,9 +1,8 @@
 ﻿import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { MobileWalletProvider } from '@wallet-ui/react-native-web3js';
+import { MobileWalletProvider, useMobileWallet } from '@wallet-ui/react-native-web3js';
 import { clusterApiUrl } from '@solana/web3.js';
-import { supabase } from '../lib/supabase';
 
 const WALLET_IDENTITY = {
   name: 'THE SEEKER',
@@ -11,65 +10,34 @@ const WALLET_IDENTITY = {
   icon: '/favicon.ico',
 };
 
-export default function RootLayout() {
+function WalletGate() {
   const router = useRouter();
   const pathname = usePathname();
+  const { account } = useMobileWallet();
 
-  const [sessionReady, setSessionReady] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const walletAddress = account?.address?.toString() ?? null;
 
   useEffect(() => {
-    let mounted = true;
+    const timer = setTimeout(() => {
+      setReady(true);
+    }, 500);
 
-    async function checkSession() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+    return () => clearTimeout(timer);
+  }, []);
 
-      if (!mounted) return;
-
-      setSessionReady(true);
-
-      if (!session && pathname !== '/' && pathname !== '/auth') {
-        router.replace('/auth');
-        return;
-      }
-
-      if (
-        session &&
-        (pathname === '/' || pathname === '/auth')
-      ) {
-        router.replace('/home');
-      }
+  useEffect(() => {
+    if (!ready) return;
+    if (
+      walletAddress &&
+      (pathname === '/' || pathname === '/auth')
+    ) {
+      router.replace('/home');
     }
+  }, [walletAddress, pathname, ready]);
 
-    checkSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-
-      if (event === 'SIGNED_OUT') {
-        router.replace('/auth');
-        return;
-      }
-
-      if (
-        event === 'SIGNED_IN' &&
-        session &&
-        (pathname === '/' || pathname === '/auth')
-      ) {
-        router.replace('/home');
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [pathname]);
-
-  if (!sessionReady) {
+  if (!ready) {
     return (
       <View
         style={{
@@ -88,19 +56,29 @@ export default function RootLayout() {
   }
 
   return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="auth" />
+      <Stack.Screen name="home" />
+      <Stack.Screen name="discover" />
+      <Stack.Screen name="leaderboard" />
+      <Stack.Screen name="profile" />
+      <Stack.Screen name="tasks" />
+      <Stack.Screen name="games" />
+      <Stack.Screen name="events" />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <MobileWalletProvider
       chain="solana:mainnet"
       endpoint={clusterApiUrl('mainnet-beta')}
       identity={WALLET_IDENTITY}
     >
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="home" />
-        <Stack.Screen name="discover" />
-        <Stack.Screen name="leaderboard" />
-        <Stack.Screen name="profile" />
-      </Stack>
+      <WalletGate />
     </MobileWalletProvider>
   );
 }
+
